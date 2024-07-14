@@ -5,12 +5,14 @@ from plexapi.video import Episode
 import logging
 import subprocess
 import configparser
+import time
+
 
 # Load configuration
 config = configparser.ConfigParser()
 
 # Use the environment variable for config location
-config_file = os.getenv('CONFIG_LOCATION', 'config.ini')
+config_file = os.getenv('CONFIG_LOCATION', '/app/config/config.ini')
 
 if not os.path.exists(config_file):
     print(f"Configuration file '{config_file}' not found.")
