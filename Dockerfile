@@ -28,10 +28,10 @@ ENV PLEX_URL="http://localhost:32400" \
     PLEX_TOKEN="xxxxxxxxxxxx" \
     LOG_FILE="/app/logs/app.log" \
     CONFIG_LOCATION="/app/config.ini" \
-    RCLONE_CONFIG="/root/.config/rclone/rclone.conf" \
-    SCRIPT_INTERVAL="*/1 * * * *"
+    RCLONE_CONFIG="/root/.config/rclone/rclone.conf"
 
 # Add cron job with configurable schedule
+ENV SCRIPT_INTERVAL="*/15 * * * *"
 RUN echo "$SCRIPT_INTERVAL /usr/local/bin/python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/script-cron \
     && chmod 0644 /etc/cron.d/script-cron \
     && crontab /etc/cron.d/script-cron \
@@ -40,5 +40,5 @@ RUN echo "$SCRIPT_INTERVAL /usr/local/bin/python /app/main.py >> /var/log/cron.l
 # Ensure the start script is executable
 RUN chmod +x /start.sh
 
-# Run the start script
+# Run the start script as the default command
 CMD ["/start.sh"]
