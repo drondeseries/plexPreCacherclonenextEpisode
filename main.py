@@ -8,18 +8,24 @@ import configparser
 import time
 
 
-# Load configuration
 config = configparser.ConfigParser()
 
-# Use the environment variable for config location
-config_file = os.getenv('CONFIG_LOCATION', '/app/config/config.ini')
+# Define possible locations for the config file
+config_locations = [
+    os.getenv('CONFIG_LOCATION'),  # Check environment variable first
+    '/app/config/config.ini',      # Then check /app/config/config.ini
+    'config.ini'                   # Finally, check config.ini in current directory
+]
 
-if not os.path.exists(config_file):
-    print(f"Configuration file '{config_file}' not found.")
+# Find the existing config file
+for config_file in config_locations:
+    if config_file and os.path.exists(config_file):
+        break
+else:
+    print("Configuration file not found in any specified locations.")
     raise SystemExit(1)
 
 config.read(config_file)
-
 try:
     PLEX_URL = config.get('Plex', 'PLEX_URL')
     PLEX_TOKEN = config.get('Plex', 'PLEX_TOKEN')
