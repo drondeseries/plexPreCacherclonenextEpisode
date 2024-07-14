@@ -8,7 +8,9 @@ import configparser
 
 # Load configuration
 config = configparser.ConfigParser()
-config_file = 'config.ini'
+
+# Use the environment variable for config location
+config_file = os.getenv('CONFIG_LOCATION', 'config.ini')
 
 if not os.path.exists(config_file):
     print(f"Configuration file '{config_file}' not found.")
