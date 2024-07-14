@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  plex-cache-script:
+    image: plex-cache-script:latest
+    container_name: plex-cache-script
+    environment:
+     - SCRIPT_INTERVAL=*/1 * * * *
+     - TZ=America/New_York
+    volumes:
+     - /path/to/config.ini:/app/config/config.ini
+     - /path/to/plexrclonecache.log:/app/logs/plexrclonecache.log
+     - /opt/rclone/rclone.conf:/root/.config/rclone/rclone.conf
+     - /path/to/media:/path/to/media
+     - /path/to/rclone/cache/location://path/to/rclone/cache/location
