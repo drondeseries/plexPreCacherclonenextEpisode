@@ -12,20 +12,33 @@ COPY logger.py ./
 COPY plex_utils.py ./
 COPY rclone.py ./
 COPY main.py ./
+COPY start.sh /start.sh
+COPY config.ini ./config.ini
 
-# Install rclone
-RUN apt-get update && apt-get install -y rclone
+# Install rclone and any other dependencies
+RUN apt-get update \
+    && apt-get install -y rclone cron \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Define environment variables
-ENV PLEX_URL="http://localhost:32400"
-ENV PLEX_TOKEN="xxxxxxxxxxxx"
-ENV LOG_FILE="/app/logs/app.log"
-ENV CONFIG_LOCATION="/app/config/config.ini"
-ENV SCRIPT_INTERVAL=15
-ENV RCLONE_CONFIG="/root/.config/rclone/rclone.conf"
+# Set environment variables
+ENV PLEX_URL="http://localhost:32400" \
+    PLEX_TOKEN="xxxxxxxxxxxx" \
+    LOG_FILE="/app/logs/app.log" \
+    CONFIG_LOCATION="/app/config.ini" \
+    RCLONE_CONFIG="/root/.config/rclone/rclone.conf" \
+    SCRIPT_INTERVAL="*/1 * * * *"
 
-# Run main.py when the container launches
-CMD ["python", "main.py"]
+# Add cron job with configurable schedule
+RUN echo "$SCRIPT_INTERVAL /usr/local/bin/python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/script-cron \
+    && chmod 0644 /etc/cron.d/script-cron \
+    && crontab /etc/cron.d/script-cron \
+    && touch /var/log/cron.log
+
+# Ensure the start script is executable
+RUN chmod +x /start.sh
+
+# Run the start script
+CMD ["/start.sh"]
